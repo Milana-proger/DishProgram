@@ -15,6 +15,7 @@ public class UserInterface extends JFrame {
     private List<OrderItem> orders;
     private Dish currentDish;
     private int selectedCount;
+    private String currentState; // Хранит текущее состояние блюда
 
     public UserInterface() {
         setTitle("Нордское рагу");
@@ -26,6 +27,7 @@ public class UserInterface extends JFrame {
         orders = new ArrayList<>();
         currentDish = new NordicStew();
         selectedCount = 0;
+        currentState = "Нордское рагу"; // Начальное состояние
 
         initComponents();
     }
@@ -83,23 +85,27 @@ public class UserInterface extends JFrame {
                 }
             }
 
-            StringBuilder state = new StringBuilder();
-            currentDish.execute(state);
-
+            // Получаем финальное состояние и цену
             String description = currentDish.getDescription();
             double cost = currentDish.getCost();
 
+            // Создаем заказ
             OrderItem order = new OrderItem(description, cost);
             orders.add(order);
             tableModel.fireTableDataChanged();
 
-            executeLog.append("    ЗАКАЗ    \n");
+            // Логируем процесс приготовления через execute()
+            executeLog.append("   Заказ    \n");
+            StringBuilder stateBuilder = new StringBuilder();
+            currentDish.execute(stateBuilder);
             executeLog.append("Состав: " + description + "\n");
             executeLog.append("Цена: " + cost + " септимов\n");
-            executeLog.append("Состояние: " + state.toString() + "\n");
+            executeLog.append("Состояние: " + currentState + "\n");
 
+            // Сбрасываем заказ
             currentDish = new NordicStew();
             selectedCount = 0;
+            currentState = "Нордское рагу";
             fireBtn.setEnabled(true);
             doubleFireBtn.setEnabled(true);
             berryBtn.setEnabled(true);
@@ -124,18 +130,23 @@ public class UserInterface extends JFrame {
             return;
         }
 
+        // Обновляем состояние и блюдо в зависимости от выбранной добавки
         switch (type) {
             case "fire":
                 currentDish = new FierySause(currentDish);
+                currentState += " +Огненный соус";
                 break;
             case "doubleFire":
                 currentDish = new DoubleVensionPortion(currentDish);
+                currentState += " +Двойная порция оленины";
                 break;
             case "berry":
                 currentDish = new SnowBerries(currentDish);
+                currentState += " +Снежные ягоды";
                 break;
             case "bread":
                 currentDish = new NordicFlatbread(currentDish);
+                currentState += " +Нордская лепешка";
                 break;
         }
 
