@@ -1,7 +1,7 @@
 package component;
 
 public abstract class DishDecorator implements Dish {
-    protected Dish dish;
+    private Dish dish;
 
     public DishDecorator(Dish dish) {
         this.dish = dish;
